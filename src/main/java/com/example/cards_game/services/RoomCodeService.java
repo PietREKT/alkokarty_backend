@@ -1,7 +1,6 @@
-package com.example.alkokarty_test.services;
+package com.example.cards_game.services;
 
-import com.example.alkokarty_test.models.dtos.CreateRoomDto;
-import org.springframework.stereotype.Component;
+import com.example.cards_game.models.dtos.CreateRoomDto;
 import org.springframework.stereotype.Service;
 
 import java.nio.charset.StandardCharsets;

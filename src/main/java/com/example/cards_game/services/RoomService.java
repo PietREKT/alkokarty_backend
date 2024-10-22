@@ -1,10 +1,9 @@
-package com.example.alkokarty_test.services;
+package com.example.cards_game.services;
 
-import com.example.alkokarty_test.data.RoomRepository;
-import com.example.alkokarty_test.data.UserRepository;
-import com.example.alkokarty_test.models.Player;
-import com.example.alkokarty_test.models.Room;
-import org.springframework.security.core.parameters.P;
+import com.example.cards_game.data.RoomRepository;
+import com.example.cards_game.data.UserRepository;
+import com.example.cards_game.models.Player;
+import com.example.cards_game.models.Room;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

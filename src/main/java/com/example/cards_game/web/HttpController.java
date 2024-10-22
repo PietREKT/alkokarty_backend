@@ -1,9 +1,9 @@
-package com.example.alkokarty_test.web;
+package com.example.cards_game.web;
 
-import com.example.alkokarty_test.data.RoomRepository;
-import com.example.alkokarty_test.data.UserRepository;
-import com.example.alkokarty_test.models.Player;
-import com.example.alkokarty_test.models.Room;
+import com.example.cards_game.data.RoomRepository;
+import com.example.cards_game.data.UserRepository;
+import com.example.cards_game.models.Player;
+import com.example.cards_game.models.Room;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;

@@ -1,4 +1,4 @@
-package com.example.alkokarty_test.models;
+package com.example.cards_game.models;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

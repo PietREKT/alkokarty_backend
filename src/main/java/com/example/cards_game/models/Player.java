@@ -1,7 +1,6 @@
-package com.example.alkokarty_test.models;
+package com.example.cards_game.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
