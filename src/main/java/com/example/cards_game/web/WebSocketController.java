@@ -11,6 +11,7 @@ import com.example.cards_game.models.dtos.JoinRoomDto;
 import com.example.cards_game.models.exceptions.MaxNumberOfVotesException;
 import com.example.cards_game.models.exceptions.PasswordsDontMatchException;
 import com.example.cards_game.models.exceptions.PlayerLimitReachedException;
+import com.example.cards_game.models.exceptions.PlayerNotCreatedException;
 import com.example.cards_game.services.RoomCodeService;
 import com.example.cards_game.services.RoomService;
 import lombok.extern.slf4j.Slf4j;
@@ -84,8 +85,9 @@ public class WebSocketController {
     @MessageMapping("/rooms/join/{roomCode}")
     @SendToUser("/queue/reply/join")
     @SendTo("/room/{roomCode}/join")
-    public Room joinRoom(@DestinationVariable String roomCode, @Payload JoinRoomDto roomDto) throws PlayerLimitReachedException, PasswordsDontMatchException {
-        Player player = userRepo.findByToken(roomDto.getPlayerToken()).orElseThrow();
+    public Room joinRoom(@DestinationVariable String roomCode, @Payload JoinRoomDto roomDto) throws PlayerLimitReachedException, PasswordsDontMatchException, PlayerNotCreatedException {
+        Player player = userRepo.findByToken(roomDto.getPlayerToken()).orElseThrow(() ->
+                new PlayerNotCreatedException("Nie udało się znaleźć gracza!"));
         Room room = roomRepo.findByCode(roomCode).orElseThrow();
         if (room.getHostToken() == null && room.getPlayers().isEmpty())
             room.setHostToken(player.getToken());
@@ -109,10 +111,7 @@ public class WebSocketController {
         Room room = roomRepo.findByCode(roomCode).orElseThrow();
         room.setPlaying(true);
         room.setPlayersVotedCount(0);
-        Card card = getRandomCard();
-        if (card == null) {
-            //TODO error handling
-        }
+        Card card = getRandomCard("");
         room.setCurrentCard(card.getContent());
         return roomRepo.save(room);
     }
@@ -129,10 +128,7 @@ public class WebSocketController {
 
         room = roomService.addVote(room, player);
         if (room.getPlayers().size() == room.getPlayersVotedCount()) {
-            Card newCard = getRandomCard();
-            while (newCard.getContent().equals(room.getCurrentCard())) {
-                newCard = getRandomCard();
-            }
+            Card newCard = getRandomCard(room.getCurrentCard());
             room.setCurrentCard(newCard.getContent());
             room.zeroVotedCount();
             roomService.zeroVotes(room);
@@ -143,9 +139,10 @@ public class WebSocketController {
     @MessageExceptionHandler
     @SendToUser("/queue/error")
     public String handleException(Exception e) throws Exception {
-        if(e instanceof MaxNumberOfVotesException || e instanceof PasswordsDontMatchException || e instanceof PlayerLimitReachedException)
-            return e.getMessage();
-        else throw e;
+//        if(e instanceof MaxNumberOfVotesException || e instanceof PasswordsDontMatchException || e instanceof PlayerLimitReachedException)
+//            return e.getMessage();
+//        else throw e;
+        return e.getMessage();
     }
 
     @org.springframework.context.event.EventListener
@@ -194,10 +191,15 @@ public class WebSocketController {
         return token;
     }
 
-    private Card getRandomCard() {
+    private Card getRandomCard(String currentCard) {
         List<Card> allCards = cardRepo.findAll();
         List<Card> weightedCard = new ArrayList<>();
         if (allCards.isEmpty()) return null;
+
+        allCards = allCards
+                .stream()
+                .filter(c -> !c.getContent().equals(currentCard))
+                .toList();
 
         for (Card card : allCards) {
             for (int i = 0; i < card.getRarity(); i++) {
