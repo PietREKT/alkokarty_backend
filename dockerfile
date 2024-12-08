@@ -1,6 +1,17 @@
 # Use the appropriate Java version for your project
 FROM openjdk:17-jdk-alpine
+WORKDIR /app
+COPY pom.xml .
+COPY src src
 
+COPY mvnw .
+COPY .mvn .mvn
+
+RUN chmod +x ./mvnw
+RUN ./mvnw cleadn package -DskipTests
+
+FROM openjdk:17-jdk
+VOLUME /tmp
 # Set the argument for the JAR file
 ARG JAR_FILE=target/*.jar
 
