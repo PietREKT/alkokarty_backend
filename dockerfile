@@ -1,24 +1,26 @@
-# Use the appropriate Java version for your project
-FROM openjdk:17-jdk-alpine
+# First stage: Build the JAR file
+FROM openjdk:17-jdk-alpine AS builder
 WORKDIR /app
-COPY pom.xml .
-COPY src src
 
-COPY mvnw .
-COPY .mvn .mvn
+# Copy Maven wrapper and project files
+COPY pom.xml ./
+COPY src ./src/
+COPY mvnw ./
+COPY .mvn ./.mvn
 
 RUN chmod +x ./mvnw
-RUN ./mvnw cleadn package -DskipTests
 
+# Build the application (JAR file)
+RUN ./mvnw clean package -DskipTests
+
+# Second stage: Run the application
 FROM openjdk:17-jdk
-VOLUME /tmp
-# Set the argument for the JAR file
-ARG JAR_FILE=target/*.jar
+WORKDIR /app
 
-# Copy the JAR file into the container
-COPY ${JAR_FILE} app.jar
+# Copy the JAR file from the build stage
+COPY --from=builder /app/target/*.jar app.jar
 
 EXPOSE 8080
 
-# Set the command to run the application
-ENTRYPOINT ["java", "-jar", "/app.jar"]
+# Run the application
+ENTRYPOINT ["java", "-jar", "/app/app.jar"]
