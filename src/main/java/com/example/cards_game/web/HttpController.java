@@ -39,7 +39,7 @@ public class HttpController {
         Player player = userRepo.findByToken(token).orElseThrow();
         player.setInRoom(true);
         userRepo.save(player);
-        return ResponseEntity.ok(token);
+        return ResponseEntity.ok("{Token: \"" + token + "\"}");
     }
 
     @GetMapping("/room/getRoom")
