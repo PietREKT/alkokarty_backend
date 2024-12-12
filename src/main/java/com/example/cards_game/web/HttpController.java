@@ -10,6 +10,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 @Controller
@@ -39,7 +41,10 @@ public class HttpController {
         Player player = userRepo.findByToken(token).orElseThrow();
         player.setInRoom(true);
         userRepo.save(player);
-        return ResponseEntity.ok("{Token: \"" + token + "\"}");
+
+        Map<String, String > response = new HashMap<>();
+        response.put("Token", token);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/room/getRoom")
